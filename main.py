@@ -11,36 +11,10 @@ from dateutil.parser import parse
 import traceback
 
 
-footer_html = """
-    <div class="footer">
-    <style>
-        .footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: #f0f2f6;
-            padding: 10px 20px;
-            text-align: center;
-        }
-        .footer a {
-            color: #4a4a4a;
-            text-decoration: none;
-        }
-        .footer a:hover {
-            color: #3d3d3d;
-            text-decoration: underline;
-        }
-    </style>
-        Connect with me on <a href="https://twitter.com/alexarsentiev" target="_blank">Twitter</a>. 
-        If you like this app, consider <a href="https://www.buymeacoffee.com/arsentiev" target="_blank">buying me a coffee</a> ☕
-    </div>
-"""
-
 page_bg_img = f"""
 <style>
 [data-testid="stAppViewContainer"] > .main {{
-background-image: url("https://i.postimg.cc/4xgNnkfX/Untitled-design.png");
+background-image: url("https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwallpapercave.com%2Fwp%2FnjHhZgk.jpg&f=1&nofb=1&ipt=4710b03480a06717c9d74b907474c2d84920d34314a165bc5e88360af3c6c501&ipo=images");
 background-size: cover;
 background-position: center center;
 background-repeat: no-repeat;
@@ -105,15 +79,15 @@ def extract_code(gpt_response):
 st.set_page_config(page_icon="🤖", page_title="Ask CSV")
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
-st.title("ASK CSV 🤖 (GPT-powered)")
-st.header("Use Natural Language to Query Your Data")
+st.title("Orb 🔮")
+st.header("Have a conversation with your data.")
 
 uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
 
 if uploaded_file is None:
     st.info(
         f"""
-                👆 Upload a .csv file first. Sample to try: [sample_data.csv](https://docs.google.com/spreadsheets/d/e/2PACX-1vTeB7_jzJtacH3XrFh553m9ahL0e7IIrTxMhbPtQ8Jmp9gCJKkU624Uk1uMbCEN_-9Sf7ikd1a85wIK/pub?gid=0&single=true&output=csv)
+                👆 Upload a .csv file first.
                 """
     )
 
@@ -145,13 +119,13 @@ elif uploaded_file:
     create_table(conn, df, table_name)
 
     selected_mode = st.selectbox(
-        "What do you want to do?", ["Ask your data", "Create a chart [beta]"]
+        "What do you want to do?", ["Ask your data", "Create a chart"]
     )
 
     if selected_mode == "Ask your data":
         user_input = st.text_area(
             "Write a concise and clear question about your data. For example: What is the total sales in the USA in 2022?",
-            value="What is the total sales in the USA in 2022?",
+            value="How many users are there?",
         )
 
         if st.button("Get Response"):
@@ -187,13 +161,13 @@ elif uploaded_file:
                     "Oops, there was an error :( Please try again with a different question."
                 )
 
-    elif selected_mode == "Create a chart [beta]":
+    elif selected_mode == "Create a chart":
         user_input = st.text_area(
             "Briefly explain what you want to plot from your data. For example: Plot total sales by country and product category",
             value="Plot total sales by country and product category",
         )
 
-        if st.button("Create a visualization [beta]"):
+        if st.button("Create a visualization"):
             try:
                 # create gpt prompt
                 gpt_input = (
@@ -224,5 +198,3 @@ elif uploaded_file:
                     "Oops, there was an error :( Please try again with a different question."
                 )
 
-# footer
-st.markdown(footer_html, unsafe_allow_html=True)
