@@ -14,7 +14,7 @@ import traceback
 page_bg_img = f"""
 <style>
 [data-testid="stAppViewContainer"] > .main {{
-background-image: url("https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwallpapercave.com%2Fwp%2FnjHhZgk.jpg&f=1&nofb=1&ipt=4710b03480a06717c9d74b907474c2d84920d34314a165bc5e88360af3c6c501&ipo=images");
+background-image: url("https://t4.ftcdn.net/jpg/04/44/12/67/360_F_444126709_Ill50TQ2ethQiw5GZowNQqkkFOMBjlEW.jpg");
 background-size: cover;
 background-position: center center;
 background-repeat: no-repeat;
@@ -76,7 +76,7 @@ def extract_code(gpt_response):
 
 
 # wide layout
-st.set_page_config(page_icon="🤖", page_title="Ask CSV")
+st.set_page_config(page_icon="🔮", page_title="Orb")
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
 st.title("Orb 🔮")
@@ -87,7 +87,7 @@ uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
 if uploaded_file is None:
     st.info(
         f"""
-                👆 Upload a .csv file first.
+                🚀 Upload your .csv file to get started.
                 """
     )
 
@@ -111,11 +111,12 @@ elif uploaded_file:
     cols = df.columns
     cols = ", ".join(cols)
 
-    with st.expander("Preview of the uploaded file"):
+    with st.expander("Preview"):
         st.table(df.head())
 
     conn = create_connection(":memory:")
-    table_name = "my_table"
+    # Parse file name from uploaded file and remove extension
+    table_name = uploaded_file.name.split(".")[0]
     create_table(conn, df, table_name)
 
     selected_mode = st.selectbox(
@@ -124,16 +125,16 @@ elif uploaded_file:
 
     if selected_mode == "Ask your data":
         user_input = st.text_area(
-            "Write a concise and clear question about your data. For example: What is the total sales in the USA in 2022?",
+            "Write a concise and clear question about your data. For example: What is the total number of users?",
             value="How many users are there?",
         )
 
-        if st.button("Get Response"):
+        if st.button("🎓 Run query "):
             try:
                 # create gpt prompt
                 gpt_input = (
-                    "Write a sql lite query based on this question: {} The table name is my_table and the table has the following columns: {}. "
-                    "Return only a sql query and nothing else".format(user_input, cols)
+                    "Write a sql lite query based on this question: {} The table name is {} and the table has the following columns: {}. "
+                    "Return only a sql query and nothing else. If the column has null values, exclude it from just aggregation.".format(user_input, table_name, cols)
                 )
 
                 query = generate_gpt_reponse(gpt_input, max_tokens=200)
@@ -163,8 +164,8 @@ elif uploaded_file:
 
     elif selected_mode == "Create a chart":
         user_input = st.text_area(
-            "Briefly explain what you want to plot from your data. For example: Plot total sales by country and product category",
-            value="Plot total sales by country and product category",
+            "Briefly explain what you want to plot from your data. For example: Plot number of users who joined per month",
+            value="Plot number of users who joined per month",
         )
 
         if st.button("Create a visualization"):
@@ -192,8 +193,6 @@ elif uploaded_file:
                 exec(extracted_code)
 
             except Exception as e:
-                # st.error(f"An error occurred: {e}")
-                # st.write(traceback.print_exc())
                 st.error(
                     "Oops, there was an error :( Please try again with a different question."
                 )
